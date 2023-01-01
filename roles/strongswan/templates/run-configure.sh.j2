@@ -1,0 +1,53 @@
+#!/bin/bash
+
+cd $(dirname $0)
+
+./configure \
+  --prefix={{ strongswan_bin_dir }} \
+  --sysconfdir={{ strongswan_conf_dir }} \
+  --disable-defaults \
+  --enable-silent-rules \
+  --enable-charon \
+  --enable-systemd \
+  --with-systemdsystemunitdir={{ strongswan_systemd_dir }} \
+  --enable-ikev2 \
+  --enable-vici \
+  --enable-swanctl \
+  --enable-nonce \
+  --enable-random \
+  --enable-drbg \
+  --enable-openssl \
+  --enable-curl \
+  --enable-pem \
+  --enable-x509 \
+  --enable-constraints \
+  --enable-revocation \
+  --enable-pki \
+  --enable-pubkey \
+  --enable-socket-default \
+  --enable-kernel-netlink \
+  --enable-md5 \
+  --enable-eap-identity \
+  --enable-eap-md5 \
+  --enable-eap-dynamic \
+  --enable-eap-tls \
+  --enable-updown \
+  --enable-tss-tss2 \
+  --enable-tpm \
+  --enable-curve25519 \
+  --enable-pkcs1 \
+  --enable-pkcs7 \
+  --enable-pkcs8 \
+  --enable-pkcs12 \
+  --enable-pem \
+  --enable-sha1 \
+  --enable-sha2 \
+  --enable-sha3 \
+  --enable-sshkey \
+  --enable-aes \
+  --enable-aesni \
+  --enable-dnskey \
+  --enable-gmp \
+  --enable-hmac \
+  --enable-mgf1 \
+  --enable-rc2

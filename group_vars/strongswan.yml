@@ -1,0 +1,17 @@
+---
+strongswan_ca_cert_dn: "C=RU, O=YourCompany, CN=YourCompany Root CA"
+
+
+### Tunnels ###
+strongswan_tunnels:
+  - id: "tunnel_1"
+    start_action: "start"
+    left:
+      inventory_hostname: "host_1"
+      public_ip: "11.22.33.44"
+      local_ip: "10.10.2.1/24"
+    right:
+      inventory_hostname: "host_2"
+      public_ip: "111.122.133.144"
+      local_ip: "10.10.3.1/24"
+

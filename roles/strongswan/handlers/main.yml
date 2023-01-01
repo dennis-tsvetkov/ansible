@@ -1,0 +1,7 @@
+---
+- name: restart strongswan
+  systemd:
+    name: strongswan
+    enabled: yes
+    state: restarted
+    daemon_reload: yes

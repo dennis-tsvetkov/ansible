@@ -1,0 +1,17 @@
+---
+- name: render tunnels config
+  template:
+    src: tunnels.conf.j2
+    dest: "{{ strongswan_conf_dir }}/swanctl/conf.d/tunnels.conf"
+
+- name: render logger config
+  template:
+    src: charon-custom-logging.conf.j2
+    dest: "{{ strongswan_conf_dir }}/strongswan.d/charon-custom-logging.conf"
+
+- name: render updown.sh
+  template:
+    src: updown.sh.j2
+    dest: "{{ strongswan_conf_dir }}/updown.sh"
+    mode: 0744
+

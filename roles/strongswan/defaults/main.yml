@@ -1,0 +1,30 @@
+---
+strongswan_version: "5.9.5"
+strongswan_src_url: "https://download.strongswan.org/strongswan-{{ strongswan_version }}.tar.gz"
+### Logger
+strongswan_log_file: "/var/log/charon.log"
+strongswan_log_time_format: "%Y-%m-%d %H:%M:%S"
+strongswan_log_loglevel: 1
+### Directories
+strongswan_bin_dir: "/usr/lib/strongswan"
+strongswan_conf_dir: "/etc/strongswan"
+strongswan_systemd_dir: "/etc/systemd/system"
+### CA key and cert
+strongswan_ca_key_type: "ed25519"
+strongswan_ca_key_size: 384
+strongswan_ca_cert_name: "strongswan_ca_cert.pem"
+strongswan_ca_cert_dn: "C=RU, O=Organization, CN=Organization Root CA"
+strongswan_ca_cert_lifetime: 3650
+### Endpoint key and cert
+strongswan_endpoint_key_type: "ed25519"
+strongswan_endpoint_key_size: 384
+strongswan_endpoint_key_name: "endpoint_key.pem"
+strongswan_endpoint_public_key_name: "endpoint_key_pub.pem"
+strongswan_endpoint_cert_name: "endpoint_cert.pem"
+strongswan_endpoint_cert_type: "pkcs10"
+strongswan_endpoint_cert_lifetime: 3650
+strongswan_endpoint_san: "{{ inventory_hostname }}"
+strongswan_endpoint_dn: "C=RU, O=Organization, CN={{ strongswan_endpoint_san }}"
+### Algorithm proposals
+strongswan_child_esp_proposals: "aes256gcm128-x25519"
+strongswan_proposals: "aes256-sha256-x25519"

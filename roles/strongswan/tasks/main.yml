@@ -1,0 +1,22 @@
+---
+- name: build and install strongswan
+  import_tasks: build.yml
+  tags:
+    - build
+  notify:
+    - restart strongswan
+
+- name: generate certificates
+  import_tasks: certs.yml
+  tags:
+    - certs
+  notify:
+    - restart strongswan
+
+- name: render config
+  import_tasks: config.yml
+  tags:
+    - config
+  notify:
+    - restart strongswan
+

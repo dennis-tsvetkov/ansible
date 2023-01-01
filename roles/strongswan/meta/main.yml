@@ -1,0 +1,14 @@
+galaxy_info:
+  author: Dennis Tsvetkov
+  description: my custom ansible role for strongSwan
+
+  issue_tracker_url: https://github.com/dennis-tsvetkov/strongswan-role.git
+
+  license: MIT
+
+  min_ansible_version: 2.1
+
+  platforms:
+    - name: Debian
+      versions:
+        - all

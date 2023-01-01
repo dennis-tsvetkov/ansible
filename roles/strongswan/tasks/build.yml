@@ -1,0 +1,58 @@
+---
+- name: install dependencies
+  apt:
+    update_cache: yes
+    state: present
+    name:
+      - build-essential
+      - libcurl4-openssl-dev
+      - libsystemd-dev
+      - libtss2-dev
+      - libssl-dev
+      - pkg-config
+      - libtss2-tcti-tabrmd0
+      - libgmp-dev
+
+- name: download strongswan sources
+  get_url:
+    url: "{{ strongswan_src_url }}"
+    dest: /tmp
+
+- name: untar src
+  unarchive:
+    src: "/tmp/strongswan-{{ strongswan_version }}.tar.gz"
+    dest: ~/
+    remote_src: yes
+
+- name: render run-configure.sh.j2
+  template:
+    src: "run-configure.sh.j2"
+    dest: "~/strongswan-{{ strongswan_version }}/run-configure.sh"
+
+- name: run ./configure
+  shell:
+    chdir: "~/strongswan-{{ strongswan_version }}"
+    cmd: "/bin/bash ./run-configure.sh"
+
+- name: make
+  shell:
+    chdir: "~/strongswan-{{ strongswan_version }}"
+    cmd: "make"
+
+- name: make install
+  shell:
+    chdir: "~/strongswan-{{ strongswan_version }}"
+    cmd: "make install"
+
+- name: create pki symlink
+  file:
+    src: "{{ strongswan_bin_dir }}/bin/pki"
+    dest: /usr/bin/pki
+    state: link
+
+- name: create swanctl symlink
+  file:
+    src: "{{ strongswan_bin_dir }}/sbin/swanctl"
+    dest: /usr/bin/swanctl
+    state: link
+

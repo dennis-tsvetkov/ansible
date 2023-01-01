@@ -1,0 +1,76 @@
+---
+- name: clean /tmp/certs
+  file:
+    path: /tmp/certs
+    state: absent
+
+- name: create tmp dir
+  file:
+    path: /tmp/certs
+    state: directory
+
+- name: choose one host to generate CA key and cert
+  set_fact:
+    ca_host: "{{ ansible_hostname }}"
+  run_once: yes
+
+- name: generate a CA key
+  shell:
+    chdir: /tmp/certs
+    cmd: "pki --gen --size {{ strongswan_ca_key_size }} --type {{ strongswan_ca_key_type }} --outform pem > strongswan_ca_key.pem"
+  when: ansible_hostname == ca_host
+
+- name: generate a selfsigned CA cert
+  shell:
+    chdir: /tmp/certs
+    cmd: 'pki --self --in strongswan_ca_key.pem --type {{ strongswan_ca_key_type }} --dn "{{ strongswan_ca_cert_dn }}" --ca --lifetime {{ strongswan_ca_cert_lifetime }} --outform pem > {{ strongswan_ca_cert_name }}'
+  when: ansible_hostname == ca_host
+
+- name: fetch CA cert and key to local
+  fetch:
+    src: "/tmp/certs/{{ item }}"
+    dest: /tmp/
+    flat: yes
+  with_items:
+    - "strongswan_ca_key.pem"
+    - "{{ strongswan_ca_cert_name }}"
+  when: ansible_hostname == ca_host
+
+- name: deploy CA cert on all hosts
+  copy:
+    src: "/tmp/{{ strongswan_ca_cert_name }}"
+    dest: "{{ strongswan_conf_dir }}/swanctl/x509ca/{{ strongswan_ca_cert_name }}"
+
+- name: deploy CA key on all hosts
+  copy:
+    src: "/tmp/strongswan_ca_key.pem"
+    dest: "/tmp/certs/strongswan_ca_key.pem"
+
+- name: generate endpoint private key
+  shell:
+    chdir: /tmp/certs
+    cmd: 'pki --gen --size {{ strongswan_endpoint_key_size }} --type {{ strongswan_endpoint_key_type }} --outform pem > {{strongswan_conf_dir}}/swanctl/private/{{ strongswan_endpoint_key_name }}'
+
+- name: generate cert request
+  shell:
+    chdir: /tmp/certs
+    cmd: 'pki --req --type priv --in {{strongswan_conf_dir}}/swanctl/private/{{ strongswan_endpoint_key_name }} --dn "{{ strongswan_endpoint_dn }}" --san "{{ strongswan_endpoint_san }}" --outform pem > certReq.pem'
+
+- name: issue endpoint certificate
+  shell:
+    chdir: /tmp/certs
+    cmd: 'pki --issue --cacert {{ strongswan_conf_dir }}/swanctl/x509ca/{{ strongswan_ca_cert_name }} --cakey strongswan_ca_key.pem --type {{ strongswan_endpoint_cert_type }} --in certReq.pem --lifetime {{ strongswan_endpoint_cert_lifetime }} --outform pem > {{ strongswan_conf_dir }}/swanctl/x509/{{ strongswan_endpoint_cert_name }}'
+
+- name: clean /tmp/certs
+  file:
+    path: /tmp/certs
+    state: absent
+
+- name: ensure dir with private keys has proper permissions
+  file:
+    path: "{{ strongswan_conf_dir }}/swanctl/private"
+    state: directory
+    owner: root
+    group: root
+    mode: 0700
+    recurse: yes
