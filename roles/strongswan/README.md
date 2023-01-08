@@ -1,1 +1,1 @@
-![gre](gre.jpg)
+![gre](gre.png)
