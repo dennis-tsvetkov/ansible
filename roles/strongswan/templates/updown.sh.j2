@@ -7,13 +7,11 @@ function add_tunnel() {
   ip tunnel add "$TUNNEL" local $PLUTO_ME remote $PLUTO_PEER mode gre
   ip addr add $LOCAL_IP dev "$TUNNEL"
   ip link set $TUNNEL up
-  ip route add $PLUTO_MY_CLIENT dev $TUNNEL
   ip route add $PLUTO_PEER_CLIENT dev $TUNNEL
 }
 
 function del_tunnel() {
   TUNNEL="gretun-$PLUTO_CONNECTION"
-  ip route del $PLUTO_MY_CLIENT
   ip route del $PLUTO_PEER_CLIENT
   ip link set $TUNNEL down
   ip addr del $LOCAL_IP dev $TUNNEL

@@ -1,4 +1,10 @@
 ---
+- name: set fact needs_certs
+  set_fact:
+    needs_certs: "{% set ns = namespace(needs_certs=false) %}{% for t in strongswan_tunnels %}{% if t.auth == 'pubkey' and (inventory_hostname == t.left.inventory_hostname or inventory_hostname == t.right.inventory_hostname) %}{% set ns.needs_certs = true %}{% endif %}{% endfor %}{{ ns.needs_certs }}"
+  tags:
+    - always
+
 - name: build and install strongswan
   import_tasks: build.yml
   tags:
@@ -10,6 +16,7 @@
   import_tasks: certs.yml
   tags:
     - certs
+  when: needs_certs
   notify:
     - restart strongswan
 

@@ -10,12 +10,13 @@ connections {
     {{ tunnel.id }} {
       remote_addrs = {{ remote.public_ip }}
       local {
-        auth = pubkey
-        certs = endpoint_cert.pem
+        auth = {{ tunnel.auth }}
+{% if tunnel.auth == 'pubkey'%}        certs = endpoint_cert.pem
+{% endif %}
         id = "{{ local.inventory_hostname }}"
       }
       remote {
-        auth = pubkey
+        auth = {{ tunnel.auth }}
         id = "{{ remote.inventory_hostname }}"
       }
       children {
@@ -23,13 +24,28 @@ connections {
           local_ts  = {{ local.local_ip | ansible.utils.ipaddr('network/prefix') }}
           remote_ts = {{ remote.local_ip | ansible.utils.ipaddr('network/prefix') }}
           start_action = {{ tunnel.start_action }}
-          updown = {{ strongswan_conf_dir }}/updown.sh {{ local.local_ip }}
-		  esp_proposals = {{ strongswan_child_esp_proposals }}
+          updown = {{ strongswan_conf_dir }}/updown.sh {{ local.local_ip | ansible.utils.ipaddr('address') }}
+          esp_proposals = {{ strongswan_child_esp_proposals }}
         }
       }
-	  proposals = {{ strongswan_proposals }}
+      proposals = {{ strongswan_proposals }}
     }
 
+{% endif %}
+{% endfor %}
+}
+
+secrets {
+{% for tunnel in strongswan_tunnels %}
+{% if tunnel.auth == 'psk' and (inventory_hostname == tunnel.left.inventory_hostname or inventory_hostname == tunnel.right.inventory_hostname) %}
+  ike-{{ tunnel.id }}-left {
+    id-{{ tunnel.id }}-left = "{{ tunnel.left.inventory_hostname }}"
+    secret = "{{ tunnel.psk_secret }}"
+  }
+  ike-{{ tunnel.id }}-right {
+    id-{{ tunnel.id }}-right = "{{ tunnel.right.inventory_hostname }}"
+    secret = "{{ tunnel.psk_secret }}"
+  }
 {% endif %}
 {% endfor %}
 }

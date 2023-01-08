@@ -1,5 +1,5 @@
 ---
-strongswan_version: "5.9.5"
+strongswan_version: "5.9.9"
 strongswan_src_url: "https://download.strongswan.org/strongswan-{{ strongswan_version }}.tar.gz"
 ### Logger
 strongswan_log_file: "/var/log/charon.log"
