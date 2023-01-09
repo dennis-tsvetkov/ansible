@@ -6,12 +6,14 @@ strongswan_ca_cert_dn: "C=RU, O=YourCompany, CN=YourCompany Root CA"
 strongswan_tunnels:
   - id: "tunnel_1"
     start_action: "start"
+    auth: "pubkey"
+    #auth: "psk"
+    #psk_secret: "1234"
     left:
-      inventory_hostname: "host_1"
-      public_ip: "11.22.33.44"
-      local_ip: "10.10.2.1/24"
+      inventory_hostname: "gw2"
+      public_ip: "5.4.3.1"
+      local_ip: "10.10.2.12/24"
     right:
-      inventory_hostname: "host_2"
-      public_ip: "111.122.133.144"
-      local_ip: "10.10.3.1/24"
-
+      inventory_hostname: "gw3"
+      public_ip: "8.7.6.5"
+      local_ip: "10.10.3.12/24"
