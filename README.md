@@ -1,0 +1,1 @@
+- [Strongswan ansible role](https://github.com/dennis-tsvetkov/ansible/blob/master/roles/strongswan/README.md)
