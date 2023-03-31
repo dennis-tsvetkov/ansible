@@ -1,0 +1,17 @@
+[Unit]
+Description=Kafka
+
+[Service]
+Type=simple
+User={{ kafka_user }}
+Group={{ kafka_group }}
+LimitNOFILE={{ nofiles_limit }}
+Restart=on-failure
+RestartSec=5
+EnvironmentFile={{ kafka_conf_dir }}/kafka.env
+ExecStart={{ kafka_bin_dir }}/bin/kafka-server-start.sh {{ kafka_conf_dir }}/server.properties
+ExecStop={{ kafka_bin_dir }}/bin/kafka-server-stop.sh
+
+[Install]
+WantedBy=multi-user.target
+

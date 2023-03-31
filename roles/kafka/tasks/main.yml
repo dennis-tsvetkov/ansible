@@ -1,0 +1,21 @@
+---
+- name: deploy kafka binary
+  import_tasks: deploy.yml
+  tags:
+    - deploy
+
+- name: render configs
+  import_tasks: config.yml
+  tags:
+    - config
+
+- name: format data dirs
+  import_tasks: data_dirs.yml
+  tags:
+    - data
+  when: kafka_format_data_dirs == True
+
+- name: install service
+  import_tasks: service.yml
+  tags:
+    - service

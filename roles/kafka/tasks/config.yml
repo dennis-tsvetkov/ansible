@@ -1,0 +1,9 @@
+---
+- name: render configs
+  template:
+    src: "config/{{ item }}" 
+    dest: "{{ kafka_conf_dir }}/{{ item | replace('.j2', '') }}"
+  with_items:
+    - server.properties.j2
+    - log4j.properties.j2
+    - kafka.env.j2

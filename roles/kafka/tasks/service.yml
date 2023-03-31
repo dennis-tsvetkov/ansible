@@ -1,0 +1,11 @@
+---
+- name: render kafka service
+  template:
+    src: kafka.service.j2
+    dest: /etc/systemd/system/kafka.service
+
+- name: enable and start kafka service
+  systemd:
+    name: kafka
+    enabled: True
+    state: started
