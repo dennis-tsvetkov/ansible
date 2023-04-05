@@ -1,0 +1,38 @@
+---
+- name: choose one host to generate KAFKA_CLUSTER_ID
+  set_fact:
+    kafka_host: "{{ ansible_hostname }}"
+  run_once: yes
+
+- name: generate KAFKA_CLUSTER_ID
+  shell: "{{ kafka_bin_dir }}/bin/kafka-storage.sh random-uuid > /tmp/KAFKA_CLUSTER_ID"
+  when: ansible_hostname == kafka_host
+
+- name: download KAFKA_CLUSTER_ID
+  fetch:
+    src: /tmp/KAFKA_CLUSTER_ID
+    dest: /tmp/
+    flat: yes
+  when: ansible_hostname == kafka_host
+
+- name: deploy KAFKA_CLUSTER_ID onto all hosts
+  copy:
+    src: /tmp/KAFKA_CLUSTER_ID
+    dest: "{{ kafka_conf_dir }}/"
+
+- name: wipe data dirs
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items: "{{ kafka_data_dirs }}"
+
+- name: create kafka data dirs
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ kafka_user }}"
+    group: "{{ kafka_group }}"
+  with_items: "{{ kafka_data_dirs }}"
+
+- name: format data dirs
+  shell: "{{ kafka_bin_dir }}/bin/kafka-storage.sh format --cluster-id $(cat {{ kafka_conf_dir }}/KAFKA_CLUSTER_ID) --config {{ kafka_conf_dir }}/server.properties"

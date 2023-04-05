@@ -1,0 +1,56 @@
+---
+- name: install openjdk java package
+  apt:
+    pkg: openjdk-{{ java_version }}-jdk
+    state: present
+    update_cache: yes
+
+- name: add kafka group
+  group:
+    name: "{{ kafka_group }}"
+
+- name: add kafka user
+  user:
+    name: "{{ kafka_user }}"
+    group: "{{ kafka_group }}"
+
+- name: download kafka distr
+  get_url:
+    url: "{{ kafka_distr_url }}"
+    dest: /tmp
+
+- name: unarchive kafka distr
+  unarchive:
+    src: "/tmp/kafka_{{ kafka_scala_version }}-{{ kafka_version }}.tgz"
+    dest: /tmp
+    remote_src: true
+
+- name: create kafka dirs
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ kafka_bin_dir }}"
+    - "{{ kafka_conf_dir }}"
+
+- name: create kafka log dir
+  file:
+    path: "{{ kafka_log_dir }}"
+    state: directory
+    owner: "{{ kafka_user }}"
+    group: "{{ kafka_group }}"
+
+- name: find tmp kafka dir to copy
+  find:
+    paths: "/tmp/kafka_{{ kafka_scala_version }}-{{ kafka_version }}"
+    patterns: '*'
+    file_type: any
+  register: kafka_tmp_content
+
+- name: copy kafka binaries to kafka bin dir
+  copy:
+    src: "{{ item.path }}"
+    dest: '{{ kafka_bin_dir }}'
+    remote_src: yes
+  with_items: "{{ kafka_tmp_content.files }}"
+

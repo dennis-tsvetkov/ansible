@@ -1,3 +1,4 @@
 inventory
 .vault_secret.txt
 group_vars/strongswan.yml
+group_vars/kafka.yml
