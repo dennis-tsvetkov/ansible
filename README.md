@@ -1,1 +1,2 @@
 - [Strongswan ansible role](https://github.com/dennis-tsvetkov/ansible/blob/master/roles/strongswan/README.md)
+- [Kafka ansible role](https://github.com/dennis-tsvetkov/ansible/blob/master/roles/kafka/README.md)
