@@ -1,3 +1,10 @@
 [strongswan_example]
 gw2
 gw3
+
+[kafka]
+kafka-01   node_id=1   is_controller=true
+kafka-02   node_id=2   is_controller=true
+kafka-03   node_id=3   is_controller=true
+kafka-04   node_id=4   is_controller=false
+kafka-05   node_id=5   is_controller=false
