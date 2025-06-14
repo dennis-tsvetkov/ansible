@@ -1,0 +1,28 @@
+#!/bin/bash
+
+LOCAL_IP=$1
+
+function add_tunnel() {
+  TUNNEL="vti-$PLUTO_CONNECTION"
+  ip tunnel add "$TUNNEL" local $PLUTO_ME remote $PLUTO_PEER mode vti key {{ strongswan_fwmark }}
+  n=$(( RANDOM % 250 + 1 ))
+  tunnel_ip="169.254.44.$n/30"
+  ip addr add $tunnel_ip dev "$TUNNEL"
+  ip link set $TUNNEL up mtu 1419
+  ip route add $PLUTO_PEER_CLIENT dev $TUNNEL src $LOCAL_IP
+}
+
+function del_tunnel() {
+  TUNNEL="vti-$PLUTO_CONNECTION"
+  ip route del $PLUTO_PEER_CLIENT
+  ip link set $TUNNEL down
+  ip tunnel del $TUNNEL
+}
+
+if [[ "x$PLUTO_VERB" == "xup-client" ]]; then
+  add_tunnel
+fi
+
+if [[ "x$PLUTO_VERB" == "xdown-client" ]]; then
+  del_tunnel
+fi

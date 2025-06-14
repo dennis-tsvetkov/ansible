@@ -4,14 +4,20 @@
     src: tunnels.conf.j2
     dest: "{{ strongswan_conf_dir }}/swanctl/conf.d/tunnels.conf"
 
-- name: render logger config
+- name: render charon configs
   template:
-    src: charon-custom-logging.conf.j2
-    dest: "{{ strongswan_conf_dir }}/strongswan.d/charon-custom-logging.conf"
+    src: "{{ item }}"
+    dest: "{{ strongswan_conf_dir }}/strongswan.d/{{ item | replace('.j2', '') }}"
+  with_items:
+    - "charon-custom-logging.conf.j2"
+    - "charon-disable-routes.conf.j2"
 
-- name: render updown.sh
+- name: render updown-{vti,gre}.sh scripts
   template:
-    src: updown.sh.j2
-    dest: "{{ strongswan_conf_dir }}/updown.sh"
+    src: "{{ item }}"
+    dest: "{{ strongswan_conf_dir }}/{{ item | replace('.j2', '') }}"
     mode: 0744
+  with_items:
+    - "updown-gre.sh.j2"
+    - "updown-vti.sh.j2"
 

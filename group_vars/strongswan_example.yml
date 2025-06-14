@@ -6,6 +6,8 @@ strongswan_ca_cert_dn: "C=RU, O=YourCompany, CN=YourCompany Root CA"
 strongswan_tunnels:
   - id: "tunnel_1"
     start_action: "start"
+    type: "vti"  # "vti" or "gre"
+    #tcp: true  # tunnel is using UDP encapsulation by default
     auth: "pubkey"
     #auth: "psk"
     #psk_secret: "1234"

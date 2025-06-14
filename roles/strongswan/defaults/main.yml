@@ -25,6 +25,7 @@ strongswan_endpoint_cert_type: "pkcs10"
 strongswan_endpoint_cert_lifetime: 3650
 strongswan_endpoint_san: "{{ inventory_hostname }}"
 strongswan_endpoint_dn: "C=RU, O=Organization, CN={{ strongswan_endpoint_san }}"
-### Algorithm proposals
+### Misc settings
 strongswan_child_esp_proposals: "aes256gcm128-x25519"
 strongswan_proposals: "aes256-sha256-x25519"
+strongswan_fwmark: 42

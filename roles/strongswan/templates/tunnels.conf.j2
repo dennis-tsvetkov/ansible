@@ -11,8 +11,9 @@ connections {
       remote_addrs = {{ remote.public_ip }}
       local {
         auth = {{ tunnel.auth }}
-{% if tunnel.auth == 'pubkey'%}        certs = endpoint_cert.pem
-{% endif %}
+        {% if tunnel.auth == 'pubkey' -%}
+	certs = endpoint_cert.pem
+        {% endif -%}
         id = "{{ local.inventory_hostname }}"
       }
       remote {
@@ -24,11 +25,28 @@ connections {
           local_ts  = {{ local.local_ip | ansible.utils.ipaddr('network/prefix') }}
           remote_ts = {{ remote.local_ip | ansible.utils.ipaddr('network/prefix') }}
           start_action = {{ tunnel.start_action }}
-          updown = {{ strongswan_conf_dir }}/updown.sh {{ local.local_ip | ansible.utils.ipaddr('address') }}
+          {% if tunnel.type=="gre" -%}
+          updown = {{ strongswan_conf_dir }}/updown-gre.sh {{ local.local_ip | ansible.utils.ipaddr('address') }}
+          {% endif -%}
+          {% if tunnel.type=="vti" -%}
+          updown = {{ strongswan_conf_dir }}/updown-vti.sh {{ local.local_ip | ansible.utils.ipaddr('address') }}
+          mark_in = {{ strongswan_fwmark }}
+          mark_out = {{ strongswan_fwmark }}
+          {% endif -%}
           esp_proposals = {{ strongswan_child_esp_proposals }}
+	  dpd_action = restart
+	  rekey_time = 3600s
         }
       }
       proposals = {{ strongswan_proposals }}
+      reauth_time = 14400s
+      rekey_time = 3600s
+      dpd_delay = 30s
+      dpd_timeout = 120s
+      unique = replace
+      {% if not 'tcp' in tunnel or not tunnel.tcp -%}
+      encap = yes
+      {% endif -%}
     }
 
 {% endif %}
